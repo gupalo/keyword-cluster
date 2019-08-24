@@ -6,7 +6,7 @@ class KeywordParser
 {
     private $volumes = [];
 
-    public function __construct(array $rows)
+    public function load(array $rows): void
     {
         foreach ($rows as $row) {
             $this->volumes[$row['keyword']] = (int)str_replace([',', ' '], '', trim($row['volume']));

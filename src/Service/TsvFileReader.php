@@ -2,12 +2,24 @@
 
 namespace App\Service;
 
+use RuntimeException;
+
 class TsvFileReader
 {
-    public static function read(string $keywordsFilename, array $columnNames): array
+    /**
+     * @param string $filename
+     * @param array $columnNames
+     * @return array
+     * @throws RuntimeException
+     */
+    public static function read(string $filename, array $columnNames): array
     {
+        if (!is_file($filename)) {
+            throw new RuntimeException(sprintf('File "%s" is not found', $filename));
+        }
+
         $result = [];
-        $f = fopen($keywordsFilename, 'rb');
+        $f = fopen($filename, 'rb');
         while (!feof($f)) {
             $s = trim(fgets($f));
             if (!$s) {

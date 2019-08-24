@@ -1,9 +1,16 @@
 #!/usr/bin/env php
 <?php
 
+use App\Command\DefaultCommand;
+
 set_time_limit(0);
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$command = new \App\Command\DefaultCommand();
-$command->execute();
+$command = new DefaultCommand();
+
+try {
+    $command->execute();
+} catch (Throwable $e) {
+    printf('ERROR: %s' . "\n\n", $e->getMessage());
+}
