@@ -1,0 +1,29 @@
+{
+    "name": "tools/keyword-cluster",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Vladimir Luchaninov",
+            "email": "vladimir.luchaninov@gmail.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    }
+}
