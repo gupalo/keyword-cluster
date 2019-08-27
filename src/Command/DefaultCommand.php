@@ -163,7 +163,7 @@ class DefaultCommand
 
     private function extractTld(string $domain): string
     {
-        $tld = preg_match('#\.((com|in|net|org|kiev)\.ua|co\.uk|com\.ru|org\.ru|net\.ru|[a-z\d\-]+)$#i', $domain, $m) ? ltrim($m[0], '.') : '-';
+        $tld = preg_match('#\.((com|in|net|org|kiev)\.ua|co\.uk|msk\.ru|spb\.ru|com\.ru|org\.ru|net\.ru|[a-z\d\-]+)$#i', $domain, $m) ? ltrim($m[0], '.') : '-';
 
         $translate = [
             'xn--80asehdb' => 'онлайн',
