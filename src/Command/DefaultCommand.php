@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Cluster\Clusterer;
+use App\Log\Logger;
 use App\Parser\KeywordParser;
 use App\Parser\SerpParser;
 use App\Service\Sanitizer;
@@ -49,11 +50,14 @@ class DefaultCommand
 
     public function execute(): void
     {
+        Logger::log('Loading...');
         $this->load();
+        Logger::log('Clustering...');
         $this->cluster();
+        Logger::log('Saving...');
         $this->save();
 
-        echo('ok');
+        Logger::log('OK');
     }
 
     private function load(): void

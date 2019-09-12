@@ -2,6 +2,7 @@
 
 namespace App\Cluster;
 
+use App\Log\Logger;
 use App\Parser\KeywordParser;
 use App\Parser\SerpParser;
 
@@ -28,7 +29,9 @@ class Clusterer
         $this->unclusteredKeywordKeys = $this->getKeywords();
         $this->minIntersectUrls = $minIntersectUrls;
 
+        Logger::log('  Getting first clusters...');
         $clusters = $this->getFirstPassClusters();
+        Logger::log('  Merging clusters...');
         $clusters = $this->mergeClusters($clusters);
 
         foreach ($clusters as $key => &$value) {
@@ -48,8 +51,12 @@ class Clusterer
             $keywords = array_keys($this->unclusteredKeywordKeys);
             $countKeywords = count($keywords);
             $skipIndexKeys = [];
+            Logger::log('    Pass: ' . $targetIntersectUrls . ' Keywords: ' . $countKeywords);
             /** @noinspection ForeachInvariantsInspection */
             for ($i = 0; $i < $countKeywords; $i++) {
+                if ($i % 100 === 0) {
+                    echo ($i % 10000 === 0) ? '#' : '.';
+                }
                 if (isset($skipIndexKeys[$i])) {
                     continue;
                 }
@@ -91,7 +98,12 @@ class Clusterer
             $clusterKeys = array_keys($clusters);
             $countClusters = count($clusters);
             $skipIndexKeys = [];
+            Logger::log('    Pass: ' . $targetIntersectUrls . ' Clusters: ' . $countClusters);
             for ($i = 0; $i < $countClusters; $i++) {
+                if ($i % 10 === 0) {
+                    echo ($i % 1000 === 0) ? '#' : '.';
+                }
+
                 if (isset($skipIndexKeys[$i])) {
                     continue;
                 }
