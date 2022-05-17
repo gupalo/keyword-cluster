@@ -24,7 +24,7 @@ class Clusterer
         $this->keywordParser = $keywordParser;
     }
 
-    public function getClusters(int $minIntersectUrls = 4): array // clusterUrlHashes => [keyword1, keyword2, ...]
+    public function getClusters(int $minIntersectUrls = 5): array // clusterUrlHashes => [keyword1, keyword2, ...]
     {
         $this->unclusteredKeywordKeys = $this->getKeywords();
         $this->minIntersectUrls = $minIntersectUrls;
@@ -52,10 +52,9 @@ class Clusterer
             $countKeywords = count($keywords);
             $skipIndexKeys = [];
             Logger::log('    Pass: ' . $targetIntersectUrls . ' Keywords: ' . $countKeywords);
-            /** @noinspection ForeachInvariantsInspection */
             for ($i = 0; $i < $countKeywords; $i++) {
-                if ($i % 100 === 0) {
-                    echo ($i % 10000 === 0) ? '#' : '.';
+                if (($i+1) % 1000 === 0) {
+                    echo (($i+1) % 10000 === 0) ? '#' : '.';
                 }
                 if (isset($skipIndexKeys[$i])) {
                     continue;
@@ -91,7 +90,9 @@ class Clusterer
 
     private function mergeClusters(array $clusters): array
     {
+        $infinity = 10;
         for ($targetIntersectUrls = 10; $targetIntersectUrls >= $this->minIntersectUrls; $targetIntersectUrls--) {
+            $isDirty = false;
             $unclusteredClusters = $clusters;
             $result = [];
 
@@ -100,33 +101,36 @@ class Clusterer
             $skipIndexKeys = [];
             Logger::log('    Pass: ' . $targetIntersectUrls . ' Clusters: ' . $countClusters);
             for ($i = 0; $i < $countClusters; $i++) {
-                if ($i % 10 === 0) {
-                    echo ($i % 1000 === 0) ? '#' : '.';
+                if (($i+1) % 100 === 0) {
+                    echo (($i+1) % 1000 === 0) ? '#' : '.';
                 }
-
                 if (isset($skipIndexKeys[$i])) {
                     continue;
                 }
 
-                $clusterUrls1 = explode(',', $clusterKeys[$i]);
+                $key1 = $clusterKeys[$i];
+                $urls1 = explode(',', $key1);
                 for ($j = $i + 1; $j < $countClusters; $j++) {
                     if (isset($skipIndexKeys[$j])) {
                         continue;
                     }
-                    $clusterUrls2 = explode(',', $clusterKeys[$j]);
+                    $key2 = $clusterKeys[$j];
+                    $urls2 = explode(',', $key2);
 
-                    $intersection = array_intersect($clusterUrls1, $clusterUrls2);
+                    $intersection = array_intersect($urls1, $urls2);
                     if (count($intersection) >= $targetIntersectUrls) {
                         ksort($intersection);
-                        $clusterUrls1 = $intersection;
-                        $key = implode(',', $clusterUrls1);
+                        $key = implode(',', $intersection);
                         if (!isset($result[$key])) {
                             $result[$key] = [];
                         }
-                        $result[$key] = array_merge($result[$key], $clusters[$clusterKeys[$i]], $clusters[$clusterKeys[$j]]);
+                        $result[$key] = array_merge($result[$key], $clusters[$key1], $clusters[$key2]);
+                        Logger::log(sprintf("        Merging clusters %s+%s; keywords %s = %s & %s", $i, $j, count($result[$key]), count($clusters[$key1]), count($clusters[$key2])));
 
-                        unset($unclusteredClusters[$clusterKeys[$i]], $unclusteredClusters[$clusterKeys[$j]]);
+                        unset($unclusteredClusters[$key1], $unclusteredClusters[$key2]);
                         $skipIndexKeys[$j] = true;
+
+                        $isDirty = true;
                     }
                 }
             }
@@ -136,6 +140,12 @@ class Clusterer
             }
 
             $clusters = $result;
+
+            if ($isDirty && $infinity-- > 0) {
+                $targetIntersectUrls++;
+            } else {
+                $infinity = 10;
+            }
         }
 
         return $clusters;

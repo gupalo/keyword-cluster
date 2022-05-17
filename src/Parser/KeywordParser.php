@@ -9,7 +9,8 @@ class KeywordParser
     public function load(array $rows): void
     {
         foreach ($rows as $row) {
-            $this->volumes[$row['keyword']] = (int)str_replace([',', ' '], '', trim($row['volume']));
+            $volume = (int)str_replace([',', ' '], '', trim($row['volume']));
+            $this->volumes[$row['keyword']] = $volume;
         }
     }
 

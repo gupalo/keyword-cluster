@@ -28,7 +28,7 @@ class TsvFileReader
             $cols = explode("\t", $s);
             $item = [];
             for ($i = 0, $iMax = count($columnNames); $i < $iMax; $i++) {
-                $item[$columnNames[$i]] = $cols[$i] ?? '';
+                $item[$columnNames[$i]] = trim($cols[$i]) ?? '';
             }
 
             $result[] = $item;

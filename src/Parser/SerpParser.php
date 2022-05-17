@@ -71,7 +71,7 @@ class SerpParser
 
             $domain = UrlParser::extractDomain($url);
 
-            $this->rows[] = [
+            $this->rows[$keyword.'-'.$pos] = [
                 'pos' => $pos,
                 'keyword' => $keyword,
                 'domain' => $domain,

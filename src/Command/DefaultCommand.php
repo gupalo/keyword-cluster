@@ -40,12 +40,12 @@ class DefaultCommand
     {
         $varDir = dirname(__DIR__, 2) . '/var';
         // input
-        $this->serpFilename = $varDir . '/input/serp.txt';
-        $this->keywordsFilename = $varDir . '/input/keywords.txt';
+        $this->serpFilename = $varDir . '/input/serp.tsv';
+        $this->keywordsFilename = $varDir . '/input/keywords.tsv';
         // output
-        $this->outputSerpFilename = $varDir . '/output/serp.txt';
-        $this->competitorsFilename = $varDir . '/output/competitors.txt';
-        $this->clustersFilename = $varDir . '/output/clusters.txt';
+        $this->outputSerpFilename = $varDir . '/output/serp.tsv';
+        $this->competitorsFilename = $varDir . '/output/competitors.tsv';
+        $this->clustersFilename = $varDir . '/output/clusters.tsv';
     }
 
     public function execute(): void
@@ -102,13 +102,15 @@ class DefaultCommand
             }
             arsort($keywordVolumes);
 
-            $clusterName = $isUnclustered ? 'unclustered' : array_keys($keywordVolumes)[0];
+            $clusterUid = md5(implode(',', array_keys($keywordVolumes)));
+            $topKeyword = $isUnclustered ? 'unclustered' : array_keys($keywordVolumes)[0];
             $totalKeywords = count($keywords);
             $totalVolume = array_sum($keywordVolumes);
 
             foreach ($keywordVolumes as $keyword => $volume) {
                 $resultItems[] = [
-                    'cluster' => $clusterName,
+                    'cluster_uid' => $clusterUid,
+                    'cluster_top_keyword' => $topKeyword,
                     'total_keywords' => $totalKeywords,
                     'total_volume' => $totalVolume,
                     'keyword' => $keyword,
